@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101B2B">
+  <meta name="description" content="Un espacio para organizar tu día y recuperar tu atención con intención.">
+  <title>Inicio · ENFOCA</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#inicio">Saltar al contenido</a>
+  <div class="app-shell">
+    <header class="brand-header">
+      <a class="brand" href="#inicio" aria-label="ENFOCA, inicio"><span class="brand-symbol" aria-hidden="true">◎</span> ENFOCA</a>
+      <span class="header-note">Un momento para ti</span>
+    </header>
+
+    <main id="inicio">
+      <section class="welcome" aria-labelledby="greeting">
+        <p class="eyebrow">TU ATENCIÓN IMPORTA</p>
+        <h1 id="greeting">Hola, a tu ritmo.</h1>
+        <p class="date"><time id="current-date">Tu día empieza aquí</time></p>
+      </section>
+
+      <section class="card progress-card" aria-labelledby="progress-title">
+        <div class="card-heading"><h2 id="progress-title">Tu progreso de hoy</h2><span class="badge">Primer paso</span></div>
+        <div class="progress-summary"><strong>0 <span>de 0 objetivos</span></strong><span class="progress-caption">Sin objetivos todavía</span></div>
+        <div class="progress-track" aria-hidden="true"><span></span></div>
+        <p class="supporting">Cada día es una nueva oportunidad para enfocar tu atención.</p>
+      </section>
+
+      <section class="objectives" aria-labelledby="objectives-title">
+        <div class="section-heading"><h2 id="objectives-title">Objetivos del día</h2><span class="count" aria-label="0 objetivos">0</span></div>
+        <div class="card empty-state">
+          <span class="empty-symbol" aria-hidden="true">＋</span>
+          <h3>Haz espacio para lo importante</h3>
+          <p>Aún no tienes objetivos. Pronto podrás elegir qué quieres lograr hoy.</p>
+          <button class="primary-button" type="button" disabled aria-describedby="objectives-note">＋ Crear un objetivo</button>
+          <small id="objectives-note">Disponible próximamente</small>
+        </div>
+      </section>
+
+      <section class="card session-card" aria-labelledby="session-title">
+        <div class="session-icon" aria-hidden="true">◷</div>
+        <div class="session-content"><p class="eyebrow">TU PRÓXIMA PAUSA CON INTENCIÓN</p><h2 id="session-title">Un espacio para concentrarte</h2><p>No tienes ninguna sesión programada.</p></div>
+        <button class="secondary-button" type="button" disabled aria-describedby="session-note">Preparar una sesión <span aria-hidden="true">→</span></button>
+        <small id="session-note">Las sesiones de concentración estarán disponibles próximamente.</small>
+      </section>
+      <p class="closing-note">Vuelve a lo que importa. Un paso cada vez.</p>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <a class="nav-item active" href="#inicio" aria-current="page"><span aria-hidden="true">⌂</span><span>Inicio</span></a>
+      <button class="nav-item" type="button" disabled aria-label="Objetivos, próximamente"><span aria-hidden="true">◎</span><span>Objetivos</span><small>Próximamente</small></button>
+      <button class="nav-item" type="button" disabled aria-label="Concentración, próximamente"><span aria-hidden="true">◷</span><span>Concentración</span><small>Próximamente</small></button>
+      <button class="nav-item" type="button" disabled aria-label="Progreso, próximamente"><span aria-hidden="true">▥</span><span>Progreso</span><small>Próximamente</small></button>
+    </nav>
+  </div>
+</body>
+</html>

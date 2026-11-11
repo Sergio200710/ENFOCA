@@ -1,0 +1,82 @@
+:root {
+  color-scheme: dark;
+  --background: #101b2b;
+  --card: #233449;
+  --accent: #78dfb1;
+  --text: #fff;
+  --muted: #b9c8d8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--background);
+  color: var(--text);
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body { margin: 0; line-height: 1.5; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+a { color: inherit; }
+button:disabled { cursor: not-allowed; }
+a:focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
+.skip-link { position: absolute; left: 16px; top: -100px; padding: 12px; background: var(--card); z-index: 3; }
+.skip-link:focus { top: 12px; }
+.app-shell { width: min(100%, 760px); margin-inline: auto; padding: env(safe-area-inset-top) 24px 0; }
+.brand-header { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #b9c8d81a; }
+.brand { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; font-size: 18px; font-weight: 800; letter-spacing: 2px; }
+.brand-symbol { color: var(--accent); font-size: 32px; line-height: 1; }
+.header-note { color: var(--muted); font-size: 11px; }
+main { padding-block: 34px 24px; }
+.eyebrow { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: 1.7px; margin: 0 0 10px; }
+h1 { font-size: clamp(28px, 6.7vw, 38px); line-height: 1.2; letter-spacing: -1px; margin: 0 0 10px; }
+.date { color: var(--muted); font-size: 14px; margin: 0; }
+.date::first-letter { text-transform: uppercase; }
+.welcome { margin-bottom: 28px; }
+.card { background: var(--card); border: 1px solid #b9c8d80d; border-radius: 22px; padding: 22px; }
+h2 { font-size: 16px; font-weight: 650; margin: 0; }
+.card-heading, .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.badge { background: #78dfb11a; color: var(--accent); border-radius: 20px; padding: 5px 9px; font-size: 10px; white-space: nowrap; }
+.progress-summary { margin: 24px 0 14px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.progress-summary strong { color: var(--accent); font-size: 32px; line-height: 1.2; font-weight: 600; }
+.progress-summary strong span { color: var(--text); font-size: 14px; font-weight: 400; }
+.progress-caption { color: var(--muted); font-size: 11px; }
+.progress-track { height: 6px; background: #101b2b99; border-radius: 8px; overflow: hidden; }
+.progress-track span { display: block; width: 0; height: 100%; background: var(--accent); }
+.supporting { margin: 15px 0 0; color: var(--muted); font-size: 12px; }
+.objectives { margin-block: 30px 20px; }
+.section-heading { margin-bottom: 14px; }
+.count { border: 1px solid #b9c8d833; color: var(--muted); border-radius: 8px; padding: 1px 8px; font-size: 12px; }
+.empty-state { text-align: center; padding-block: 26px; }
+.empty-symbol { display: inline-grid; place-items: center; width: 46px; height: 46px; border: 1px dashed #78dfb166; border-radius: 15px; color: var(--accent); font-size: 25px; }
+h3 { font-size: 16px; margin: 16px 0 7px; font-weight: 600; }
+.empty-state p { max-width: 290px; color: var(--muted); font-size: 13px; margin: 0 auto 20px; }
+.primary-button, .secondary-button { min-height: 46px; border-radius: 12px; padding: 12px 18px; font-size: 13px; font-weight: 650; }
+.primary-button { background: #78dfb126; border: 1px solid #78dfb14d; color: var(--accent); width: 100%; max-width: 290px; }
+small { color: var(--muted); font-size: 10px; }
+.empty-state small { display: block; margin-top: 9px; }
+.session-card { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; }
+.session-icon { display: grid; place-items: center; align-self: start; width: 40px; height: 40px; border-radius: 12px; background: #78dfb114; color: var(--accent); font-size: 27px; }
+.session-content .eyebrow { font-size: 9px; letter-spacing: 1px; margin-bottom: 6px; }
+.session-content h2 { line-height: 1.4; }
+.session-content p:last-child { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+.secondary-button { grid-column: 1 / -1; width: 100%; display: flex; justify-content: space-between; gap: 12px; border: 1px solid #b9c8d833; background: transparent; color: var(--muted); }
+.session-card > small { grid-column: 1 / -1; margin-top: -5px; }
+.closing-note { text-align: center; font-size: 11px; color: var(--muted); margin: 25px 0 6px; }
+.bottom-nav { position: sticky; bottom: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); background: var(--background); border-top: 1px solid #b9c8d826; gap: 3px; }
+.nav-item { min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2px 0; background: transparent; border: 0; color: var(--muted); text-decoration: none; font-size: 10px; gap: 3px; }
+.nav-item > span:first-child { font-size: 24px; line-height: 1.1; }
+.nav-item small { font-size: 8px; }
+.nav-item.active { color: var(--accent); }
+@media (min-width: 600px) {
+  .app-shell { padding-inline: 40px; }
+  .header-note { font-size: 12px; }
+  main { padding-top: 44px; }
+  .card { padding: 28px; }
+  .empty-state { padding-block: 32px; }
+  .nav-item { font-size: 12px; }
+}
+@media (max-width: 359px) {
+  .app-shell { padding-inline: 16px; }
+  .card { padding: 18px; }
+  .header-note { display: none; }
+  .badge { font-size: 9px; }
+  .card-heading h2 { font-size: 14px; }
+}
