@@ -1,3 +1,5 @@
+import { runNavigationBrowserTests } from "./navigation-browser.mjs";
+import { runPulseBrowserTests } from "./pulse-browser.mjs";
 // Prueba sin dependencias: servidor temporal local y perfil Chromium aislado.
 // Ejecutar: node tests/browser.mjs [ruta al ejecutable Chrome/Edge]
 // --pwa queda reservado para el borrador de fase 7, todavía sin integrar.
@@ -55,6 +57,7 @@ try {
   socket.addEventListener("message", (event) => {
     const message = JSON.parse(event.data);
     if (message.method === "Runtime.exceptionThrown") errors.push(message.params.exceptionDetails);
+    if (message.method === "Runtime.consoleAPICalled" && message.params.type === "error") errors.push(message.params);
     if (message.method === "Network.responseReceived") networkResponses.push(message.params.response);
     const item = pending.get(message.id);
     if (item) { pending.delete(message.id); clearTimeout(item.timeout); message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); }
@@ -163,6 +166,7 @@ try {
   }
   check(await evaluate(`(async()=>{const db=await new Promise(resolve=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result)});const count=await new Promise(resolve=>{const r=db.transaction('profiles').objectStore('profiles').count();r.onsuccess=()=>resolve(r.result)});db.close();return count===1})()`), "solo existe un perfil después de editar y repetir la bienvenida");
   await command("Emulation.setDeviceMetricsOverride", {width:390,height:844,deviceScaleFactor:1,mobile:true});
+  await evaluate(`location.hash="objetivos"`); await wait(`!document.querySelector("#objetivos").hidden`);
   check(await evaluate(`!document.querySelector('#empty-goals').hidden`), "estado vacío inicial");
   await evaluate(`document.querySelector('#create-first-goal').click(); document.querySelector('#goal-title').value='Leer diez páginas'; document.querySelector('#goal-form').requestSubmit(); document.querySelector('#goal-form').requestSubmit();`);
   await wait(`!document.querySelector('#goal-dialog').open`);
@@ -241,8 +245,12 @@ try {
   }
   await checkSchemaMigration({ command, check, requestHandler: server.listeners("request")[0] });
   await checkSchemaMigration({ command, check, requestHandler: server.listeners("request")[0], fromVersion: 3 });
+  await evaluate(`location.hash="agenda"`); await wait(`!document.querySelector("#agenda").hidden`);
   await runAgendaBrowserTests({ command, evaluate, wait, check });
+  await evaluate(`location.hash="resumen"`); await wait(`!document.querySelector("#resumen").hidden`);
   await runSummaryBrowserTests({ command, evaluate, wait, check });
+  await runPulseBrowserTests({ command, evaluate, wait, check });
+  await runNavigationBrowserTests({ command, evaluate, wait, check });
   check(errors.length===0, "sin excepciones JavaScript no controladas en Chromium");
   const denied = await command("Page.addScriptToEvaluateOnNewDocument", { source: `window.deniedOriginalOpen=IDBFactory.prototype.open;IDBFactory.prototype.open=function(){throw new DOMException('denied','SecurityError')}` });
   await command("Page.reload");

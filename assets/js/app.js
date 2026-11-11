@@ -1,9 +1,14 @@
+import { mountNavigation } from "./navigation.js";
+import { mountHome } from "./home.js";
 import { createGoalRepository } from "./storage.js";
 import { createGoalService, localDate } from "./goals.js";
 import { createGoalsUI } from "./ui.js";
 import { mountProfile } from "./profile-ui.js";
 import { mountAgenda } from "./agenda-ui.js";
 import { mountSummary } from "./summary-ui.js";
+
+mountNavigation();
+mountHome();
 
 const service = createGoalService(createGoalRepository());
 const state = { date: localDate(), goals: [], loaded: false, busy: false, error: "", message: "Cargando objetivos…" };

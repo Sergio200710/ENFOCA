@@ -2,10 +2,12 @@ import { dailySummary, consecutiveDays, motivation, celebration, summaryHistory 
 import { createSummaryRepository } from "./summary-storage.js";
 import { localDate } from "./goals.js";
 import { validateDay } from "./agenda.js";
+import { mountPulse } from "./pulse-ui.js";
 
 export function mountSummary() {
   const get = (id) => document.getElementById(id);
   const repository = createSummaryRepository();
+  const pulse = mountPulse();
   const formatter = new Intl.DateTimeFormat("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   let date = localDate();
   let followToday = true;
@@ -18,7 +20,8 @@ export function mountSummary() {
   function setBusy(value) {
     busy = value;
     get("resumen").setAttribute("aria-busy", String(value));
-    for (const control of get("resumen").querySelectorAll("button, input, select")) control.disabled = value;
+    for (const control of get("resumen").querySelectorAll("button, input, select")) if (!control.closest("#pulse")) control.disabled = value;
+    pulse.setBusy(value);
   }
   function render(activities, claimed) {
     const today = localDate();
@@ -63,6 +66,7 @@ export function mountSummary() {
     get("summary-error-text").textContent = "";
     get("summary-status").textContent = claimed ? "Has completado las actividades exigibles. La felicitación del día está abierta en el resumen." : "Resumen calculado desde las actividades guardadas en este dispositivo.";
     renderedDate = date;
+    pulse.render(activities, date);
   }
   async function load() {
     if (busy) { pending = true; return; }

@@ -7,20 +7,22 @@
   <meta name="description" content="Un espacio para organizar tu día y recuperar tu atención con intención.">
   <title>Inicio · ENFOCA</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/img/enfoca-icon.svg">
   <script src="assets/js/app.js" type="module"></script>
 </head>
 <body>
-  <a class="skip-link" href="#inicio">Saltar al contenido</a>
+  <a class="skip-link" href="#main-content">Saltar al contenido</a>
   <div class="app-shell">
     <header class="brand-header">
-      <a class="brand" href="#inicio" aria-label="ENFOCA, inicio"><span class="brand-symbol" aria-hidden="true">◎</span> ENFOCA</a>
+      <a class="brand" href="#inicio" aria-label="ENFOCA, inicio"><span class="brand-symbol" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></span> ENFOCA</a>
       <div class="header-actions"><span class="header-note">Un momento para ti</span><button class="preferences-link" id="open-preferences" type="button" aria-haspopup="dialog">Preferencias</button></div>
     </header>
 
-    <main id="inicio">
+    <main id="main-content" tabindex="-1">
+      <section id="inicio" data-view>
       <section class="welcome" aria-labelledby="greeting">
         <p class="eyebrow">TU ATENCIÓN IMPORTA</p>
-        <h1 id="greeting">Hola, a tu ritmo.</h1>
+        <h1 id="greeting" tabindex="-1">Hola, a tu ritmo.</h1>
         <p class="date"><time id="current-date">Tu día empieza aquí</time></p>
       </section>
 
@@ -31,49 +33,92 @@
         <p class="supporting">Cada día es una nueva oportunidad para enfocar tu atención.</p>
       </section>
 
-      <section class="objectives" id="objetivos" aria-labelledby="objectives-title" aria-busy="true">
-        <div class="section-heading"><h2 id="objectives-title">Objetivos del día</h2><span class="count" id="goal-count" aria-label="Consultando objetivos">—</span></div>
+      <section class="next-activity" aria-labelledby="next-activity-title">
+        <p class="eyebrow">EN TU AGENDA</p><h2 id="next-activity-title">Tu próximo paso</h2>
+        <p id="home-activity-status" role="status">Consultando la agenda…</p>
+        <p id="home-activity-time" class="activity-hours"></p><h3 id="home-activity-name"></h3>
+        <a class="primary-button home-agenda-link" href="#agenda">Ver mi agenda</a>
+      </section>
+      <a class="home-goals-link" href="#objetivos">Organizar mis objetivos</a>
+      <section class="card session-card" aria-labelledby="session-title">
+        <div class="session-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="session-content"><p class="eyebrow">TU PRÓXIMA PAUSA CON INTENCIÓN</p><h2 id="session-title">Un espacio para concentrarte</h2><p>No tienes ninguna sesión programada.</p></div>
+        <button class="secondary-button" type="button" disabled aria-describedby="session-note">Preparar una sesión <span aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></span></button>
+        <small id="session-note">Las sesiones de concentración estarán disponibles próximamente.</small>
+      </section>
+      <p class="closing-note">Vuelve a lo que importa. Un paso cada vez.</p>
+      </section>
+      <section class="objectives" id="objetivos" data-view hidden aria-labelledby="objectives-title" aria-busy="true">
+        <div class="section-heading"><h1 id="objectives-title" tabindex="-1">Objetivos del día</h1><span class="count" id="goal-count" aria-label="Consultando objetivos">—</span></div>
         <p id="goals-status" class="goals-status" role="status" aria-live="polite">Cargando objetivos…</p>
         <div id="storage-error" class="storage-error" hidden><p id="storage-error-text" role="alert"></p><button id="retry-storage" class="text-button" type="button">Volver a cargar</button></div>
         <div class="card empty-state" id="empty-goals" hidden>
-          <span class="empty-symbol" aria-hidden="true">＋</span>
+          <span class="empty-symbol" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
           <h3>Haz espacio para lo importante</h3>
           <p>Aún no tienes objetivos para hoy. Elige qué quieres lograr, un paso cada vez.</p>
-          <button class="primary-button" id="create-first-goal" type="button" disabled>＋ Crear un objetivo</button>
+          <button class="primary-button" id="create-first-goal" type="button" disabled><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Crear un objetivo</button>
           <small>Guardados en este dispositivo</small>
         </div>
         <ul class="goal-list" id="goal-list" aria-label="Objetivos activos"></ul>
-        <button class="primary-button add-goal" id="add-goal" type="button" hidden disabled>＋ Añadir objetivo</button>
+        <button class="primary-button add-goal" id="add-goal" type="button" hidden disabled><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Añadir objetivo</button>
         <details class="archived-goals" id="archived-goals" hidden><summary id="archive-summary">Archivados de hoy</summary><p class="archive-note">No cuentan para el progreso. Puedes restaurarlos o eliminarlos definitivamente.</p><ul class="goal-list" id="archived-list" aria-label="Objetivos archivados"></ul></details>
       </section>
 
-      <section class="agenda" id="agenda" aria-labelledby="agenda-title" aria-busy="true">
-        <div class="section-heading"><h2 id="agenda-title">Agenda diaria</h2><span class="badge">A tu hora</span></div>
+      <section class="agenda" id="agenda" data-view hidden aria-labelledby="agenda-title" aria-busy="true">
+        <div class="section-heading"><h1 id="agenda-title" tabindex="-1">Agenda diaria</h1><span class="badge">A tu hora</span></div>
         <p class="agenda-intro">Tu planificación y lo que sucede, por separado. Nada se completa automáticamente.</p>
         <label class="agenda-date-label" for="agenda-date">Día de la agenda</label>
         <input id="agenda-date" class="agenda-date" type="date" min="0001-01-01" max="9999-12-31" required>
-        <div class="agenda-day-actions"><button class="text-button" id="agenda-previous" type="button" aria-label="Consultar el día anterior">← Anterior</button><button class="text-button" id="agenda-today" type="button">Hoy</button><button class="text-button" id="agenda-next" type="button" aria-label="Consultar el día siguiente">Siguiente →</button></div>
+        <div class="agenda-day-actions"><button class="text-button" id="agenda-previous" type="button" aria-label="Consultar el día anterior"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg> Anterior</button><button class="text-button" id="agenda-today" type="button">Hoy</button><button class="text-button" id="agenda-next" type="button" aria-label="Consultar el día siguiente">Siguiente <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button></div>
         <p class="goals-status" id="agenda-status" role="status" aria-live="polite">Cargando agenda…</p>
         <div class="storage-error" id="agenda-error" hidden><p id="agenda-error-text" role="alert"></p><button class="text-button" id="agenda-retry" type="button">Volver a cargar agenda</button></div>
-        <div class="card empty-state" id="agenda-empty" hidden><span class="empty-symbol" aria-hidden="true">◷</span><h3>Un día por organizar</h3><p>No hay actividades para esta fecha. Reserva un horario para lo que te importa.</p></div>
+        <div class="card empty-state" id="agenda-empty" hidden><span class="empty-symbol" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h3>Un día por organizar</h3><p>No hay actividades para esta fecha. Reserva un horario para lo que te importa.</p></div>
         <ol class="goal-list" id="activity-list" aria-label="Actividades ordenadas por hora"></ol>
-        <button class="primary-button add-goal" id="agenda-create" type="button" disabled>＋ Crear actividad</button>
+        <button class="primary-button add-goal" id="agenda-create" type="button" disabled><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Crear actividad</button>
         <details class="archived-goals" id="agenda-removed" hidden><summary id="agenda-removed-summary">Eliminadas de la agenda</summary><p class="archive-note">El historial se conserva en este dispositivo. Estas actividades no ocupan horario.</p><ol class="goal-list" id="activity-removed-list" aria-label="Historial de actividades eliminadas"></ol></details>
         <p class="archive-note">Inicio anticipado o a la hora exacta: puntual. Empezar después o terminar después del final previsto: con retraso. Sin margen de cortesía.</p>
       </section>
 
-      <section class="daily-summary" id="resumen" aria-labelledby="summary-title" aria-busy="true">
-        <div class="section-heading"><h2 id="summary-title">Resumen diario</h2><span class="badge">Actividades reales</span></div>
+      <section class="daily-summary" id="resumen" data-view hidden aria-labelledby="summary-title" aria-busy="true">
+        <div class="section-heading"><h1 id="summary-title" tabindex="-1">Resumen diario</h1><span class="badge">Actividades reales</span></div>
         <p class="agenda-intro">El cumplimiento de tu agenda, separado del progreso de tus objetivos.</p>
         <label class="agenda-date-label" for="summary-date">Día del resumen</label>
         <input class="agenda-date" id="summary-date" type="date" min="0001-01-01" max="9999-12-31" required>
-        <div class="agenda-day-actions"><button class="text-button" id="summary-previous" type="button" aria-label="Resumen del día anterior">← Anterior</button><button class="text-button" id="summary-today" type="button">Hoy</button><button class="text-button" id="summary-next" type="button" aria-label="Resumen del día siguiente">Siguiente →</button></div>
+        <div class="agenda-day-actions"><button class="text-button" id="summary-previous" type="button" aria-label="Resumen del día anterior"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg> Anterior</button><button class="text-button" id="summary-today" type="button">Hoy</button><button class="text-button" id="summary-next" type="button" aria-label="Resumen del día siguiente">Siguiente <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button></div>
         <p class="summary-day-label" id="summary-date-label"></p>
         <p class="goals-status" id="summary-status" role="status" aria-live="polite">Cargando resumen…</p>
         <div class="storage-error" id="summary-error" hidden><p id="summary-error-text" role="alert"></p></div>
         <p class="archive-note" id="summary-save-warning" role="status" hidden></p>
         <button class="text-button" id="summary-retry" type="button">Actualizar resumen</button>
         <div id="summary-content" hidden>
+          <section id="pulse" class="pulse" aria-labelledby="pulse-title">
+            <div class="pulse-heading"><div><p class="eyebrow">TU RITMO, CON PERSPECTIVA</p><h2 id="pulse-title">ENFOCA Pulse</h2></div><span class="pulse-local">Solo tus registros</span></div>
+            <p id="pulse-error" class="form-error" role="alert" hidden></p>
+            <div id="pulse-body">
+              <div class="pulse-periods" role="group" aria-label="Periodo de la curva"><button type="button" data-pulse-period="7" aria-pressed="true">7 días</button><button type="button" data-pulse-period="30" aria-pressed="false">30 días</button></div>
+              <p id="pulse-period-label" class="pulse-period-label"></p>
+              <dl class="pulse-metrics" aria-label="Resultados del periodo"><div><dt>Cumplimiento</dt><dd id="pulse-percentage">—</dd></div><div><dt>Completadas</dt><dd id="pulse-completed">—</dd></div><div><dt>Puntualidad</dt><dd id="pulse-punctuality">—</dd></div></dl>
+              <p id="pulse-ratio" class="archive-note"></p><p id="pulse-change" class="pulse-change"></p>
+              <figure class="pulse-curve-figure" aria-labelledby="pulse-curve-title">
+                <figcaption id="pulse-curve-title">Curva de cumplimiento</figcaption>
+                <p id="pulse-curve-help" class="archive-note">Selecciona una fecha. Con el teclado, usa las flechas, Inicio y Fin. Los huecos no representan un 0 %.</p>
+                <div id="pulse-curve-scroll" class="pulse-curve-scroll"><svg id="pulse-curve" role="group" aria-labelledby="pulse-curve-title" aria-describedby="pulse-curve-help" xmlns="http://www.w3.org/2000/svg"></svg></div>
+                <p class="pulse-legend"><span><i class="pulse-key recorded" aria-hidden="true"></i>Con exigibles</span><span><i class="pulse-key empty" aria-hidden="true"></i>Sin actividades</span><span><i class="pulse-key excluded" aria-hidden="true"></i>Sin exigibles</span></p>
+              </figure>
+              <div id="pulse-curve-detail" class="pulse-day-detail" role="status" aria-live="polite" aria-atomic="true"></div>
+              <details class="pulse-table-details"><summary>Consultar los datos de la curva</summary><div class="pulse-table-scroll"><table><caption>Registros diarios del periodo seleccionado</caption><thead><tr><th scope="col">Fecha</th><th scope="col">Cumplimiento</th><th scope="col">Completadas</th><th scope="col">Exigibles</th></tr></thead><tbody id="pulse-table-body"></tbody></table></div></details>
+              <section class="pulse-consistency" aria-labelledby="pulse-map-title">
+                <div class="pulse-heading"><h3 id="pulse-map-title">Mapa de constancia</h3><div class="pulse-map-actions"><button id="pulse-map-previous" class="text-button" type="button" aria-label="Consultar los 35 días anteriores">Antes</button><button id="pulse-map-next" class="text-button" type="button" aria-label="Consultar los 35 días siguientes">Después</button></div></div>
+                <p id="pulse-map-label" class="archive-note"></p><p id="pulse-map-help" class="sr-only">Fechas ordenadas de izquierda a derecha y de arriba abajo. Usa las flechas, Inicio y Fin para seleccionar una fecha.</p>
+                <div id="pulse-map" class="pulse-map" role="group" aria-labelledby="pulse-map-title" aria-describedby="pulse-map-help"></div>
+                <p class="pulse-legend" aria-label="Leyenda de constancia"><span><i class="pulse-key empty" aria-hidden="true"></i>Sin actividades</span><span><i class="pulse-key excluded" aria-hidden="true"></i>Sin exigibles</span><span><i class="pulse-key zero" aria-hidden="true"></i>0 %</span><span><i class="pulse-key level1" aria-hidden="true"></i>1–25 %</span><span><i class="pulse-key level2" aria-hidden="true"></i>26–50 %</span><span><i class="pulse-key level3" aria-hidden="true"></i>51–75 %</span><span><i class="pulse-key level4" aria-hidden="true"></i>76–100 %</span></p>
+                <div id="pulse-map-detail" class="pulse-day-detail" role="status" aria-live="polite" aria-atomic="true"></div>
+              </section>
+              <section class="pulse-calendar" aria-labelledby="pulse-calendar-title"><h3 id="pulse-calendar-title">Con perspectiva</h3><p class="archive-note">Mes y año hasta la fecha elegida, sin incluir días posteriores.</p><div class="pulse-calendar-grid"><div><h4 id="pulse-month-title"></h4><p id="pulse-month-value"></p><small id="pulse-month-ratio"></small></div><div><h4 id="pulse-year-title"></h4><p id="pulse-year-value"></p><small id="pulse-year-ratio"></small></div></div></section>
+              <details class="summary-rules pulse-rules"><summary>Cómo leer Pulse</summary><p>El cumplimiento se calcula con completadas ÷ exigibles × 100, sumando actividades del periodo; no es la media de los porcentajes diarios. Las omitidas cuentan como exigibles. Canceladas y eliminadas se excluyen. Sin exigibles no se calcula porcentaje.</p><p>La puntualidad es completadas puntualmente ÷ completadas × 100. Los porcentajes se redondean al entero más cercano y no muestran 100 % si queda alguna exigible sin completar.</p><p>La evolución compara los ratios exactos de dos periodos consecutivos, en puntos porcentuales. Requiere al menos tres días con actividades exigibles en cada periodo. Un periodo en curso puede cambiar. Los días sin actividades no se rellenan con ceros.</p></details>
+            </div>
+          </section>
+          <h2 class="pulse-daily-title">Tu día en detalle</h2>
           <p class="archive-note" id="summary-empty" hidden>No hay actividades registradas para esta fecha. No se atribuye ningún cumplimiento.</p>
           <dl class="summary-grid" aria-label="Recuento diario de actividades">
             <div><dt>Planificadas</dt><dd id="summary-planned">—</dd></div>
@@ -94,28 +139,15 @@
         </div>
       </section>
 
-      <section class="card session-card" aria-labelledby="session-title">
-        <div class="session-icon" aria-hidden="true">◷</div>
-        <div class="session-content"><p class="eyebrow">TU PRÓXIMA PAUSA CON INTENCIÓN</p><h2 id="session-title">Un espacio para concentrarte</h2><p>No tienes ninguna sesión programada.</p></div>
-        <button class="secondary-button" type="button" disabled aria-describedby="session-note">Preparar una sesión <span aria-hidden="true">→</span></button>
-        <small id="session-note">Las sesiones de concentración estarán disponibles próximamente.</small>
-      </section>
-      <p class="closing-note">Vuelve a lo que importa. Un paso cada vez.</p>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación principal">
-      <a class="nav-item active" href="#inicio" aria-current="page"><span aria-hidden="true">⌂</span><span>Inicio</span></a>
-      <a class="nav-item" href="#objetivos"><span aria-hidden="true">◎</span><span>Objetivos</span></a>
-      <a class="nav-item" href="#agenda"><span aria-hidden="true">▦</span><span>Agenda</span></a>
-      <button class="nav-item" type="button" disabled aria-label="Concentración, próximamente"><span aria-hidden="true">◷</span><span>Concentración</span><small>Próximamente</small></button>
-      <a class="nav-item" href="#resumen"><span aria-hidden="true">▥</span><span>Progreso</span></a>
-    </nav>
+    <nav class="bottom-nav" aria-label="Navegación principal"><a class="nav-item" href="#inicio"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v11h-6v-7H9v7H3z"/></svg><span>Inicio</span></a><a class="nav-item" href="#objetivos"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><span>Objetivos</span></a><a class="nav-item" href="#agenda"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18"/></svg><span>Agenda</span></a><a class="nav-item" href="#resumen"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10m8 10V4m8 16v-7"/></svg><span>Progreso</span></a></nav>
   </div>
   <dialog id="goal-dialog" class="goal-dialog" aria-labelledby="goal-dialog-title">
     <form id="goal-form">
       <h2 id="goal-dialog-title">Nuevo objetivo</h2>
       <p class="dialog-description" id="goal-day-label"></p>
-      <label for="goal-title">¿Qué quieres lograr?</label>
+      <label for="goal-title">¿Qué quieres lograr<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></label>
       <input id="goal-title" name="title" type="text" required maxlength="160" autocomplete="off" aria-describedby="title-help goal-form-error">
       <small id="title-help">Entre 1 y 160 caracteres. Los objetivos se guardan en este dispositivo.</small>
       <p id="goal-form-error" class="form-error" role="alert"></p>
@@ -123,7 +155,7 @@
     </form>
   </dialog>
   <dialog id="delete-dialog" class="goal-dialog" aria-labelledby="delete-dialog-title" aria-describedby="delete-description">
-    <h2 id="delete-dialog-title">¿Eliminar definitivamente?</h2>
+    <h2 id="delete-dialog-title">¿Eliminar definitivamente<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></h2>
     <p id="delete-description">Se eliminará este objetivo archivado de este dispositivo. Esta acción no se puede deshacer.</p>
     <p id="delete-goal-title" class="delete-goal-title"></p>
     <p id="delete-error" class="form-error" role="alert"></p>
@@ -135,7 +167,7 @@
     <div id="onboarding-steps">
       <p id="onboarding-step-label" class="step-label">Paso 1 de 6</p>
       <div id="onboarding-progress" class="progress-track" role="progressbar" aria-label="Paso del onboarding" aria-valuemin="0" aria-valuemax="6" aria-valuenow="1"><span></span></div>
-      <h2 id="onboarding-title" tabindex="-1">¿Qué quieres conseguir con ENFOCA?</h2>
+      <h2 id="onboarding-title" tabindex="-1">¿Qué quieres conseguir con ENFOCA<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></h2>
       <form id="onboarding-form" novalidate>
         <div id="onboarding-question"></div>
         <p id="onboarding-error" class="form-error" role="alert"></p>
@@ -146,7 +178,7 @@
       <button id="onboarding-exit" class="text-button" type="button" hidden>Ir a Inicio sin guardar</button>
     </div>
     <div id="onboarding-welcome" hidden>
-      <p class="welcome-symbol" aria-hidden="true">◎</p>
+      <p class="welcome-symbol" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></p>
       <p class="welcome-message" tabindex="-1" id="onboarding-welcome-message">Bienvenido a ENFOCA. Vamos a organizar tus días a tu ritmo.</p>
       <button id="onboarding-enter" class="primary-button" type="button">Entrar en ENFOCA</button>
     </div>
@@ -167,7 +199,7 @@
   <dialog id="activity-dialog" class="goal-dialog agenda-dialog" aria-labelledby="activity-dialog-title">
     <form id="activity-form" novalidate>
       <h2 id="activity-dialog-title">Nueva actividad</h2>
-      <label for="activity-title">¿Qué vas a hacer?</label>
+      <label for="activity-title">¿Qué vas a hacer<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></label>
       <input id="activity-title" type="text" maxlength="160" required autocomplete="off" aria-describedby="activity-title-help">
       <small id="activity-title-help">Entre 1 y 160 caracteres.</small>
       <label for="activity-date">Fecha planificada</label>
@@ -183,7 +215,7 @@
     </form>
   </dialog>
   <dialog id="activity-delete-dialog" class="goal-dialog" aria-labelledby="activity-delete-title" aria-describedby="activity-delete-description">
-    <h2 id="activity-delete-title">¿Eliminar de la agenda?</h2>
+    <h2 id="activity-delete-title">¿Eliminar de la agenda<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></h2>
     <p id="activity-delete-description">Se quitará de las actividades visibles. Sus horarios y su historial se conservarán en este dispositivo.</p>
     <p class="delete-goal-title" id="activity-delete-name"></p><p class="form-error" id="activity-delete-error" role="alert"></p>
     <div class="dialog-actions"><button class="secondary-button" id="activity-delete-cancel" type="button">Conservar actividad</button><button class="danger-button" id="activity-delete-confirm" type="button">Eliminar de la agenda</button></div>

@@ -8,11 +8,12 @@ const CACHE_PREFIX = `enfoca-pwa:${encodeURIComponent(BASE.pathname)}:`;
 const CACHE_NAME = `${CACHE_PREFIX}${RELEASE}`;
 const FILES = [
   "index.html", "manifest.json", "assets/css/style.css",
-  "assets/js/app.js", "assets/js/pwa.js", "assets/js/pwa-policy.js",
+  "assets/js/app.js", "assets/js/navigation.js", "assets/js/home.js", "assets/js/pwa.js", "assets/js/pwa-policy.js",
   "assets/js/storage.js", "assets/js/goals.js", "assets/js/ui.js",
   "assets/js/profile.js", "assets/js/profile-storage.js", "assets/js/profile-ui.js",
   "assets/js/agenda.js", "assets/js/agenda-storage.js", "assets/js/agenda-ui.js",
   "assets/js/summary.js", "assets/js/summary-storage.js", "assets/js/summary-ui.js",
+  "assets/js/pulse.js", "assets/js/pulse-ui.js",
   "assets/img/icon-192.png", "assets/img/icon-512.png",
   "assets/img/apple-touch-icon.png", "assets/img/enfoca-icon.svg",
 ];
