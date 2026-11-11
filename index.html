@@ -7,14 +7,14 @@
   <meta name="description" content="Un espacio para organizar tu día y recuperar tu atención con intención.">
   <title>Inicio · ENFOCA</title>
   <link rel="stylesheet" href="assets/css/style.css">
-  <script src="assets/js/app.js" defer></script>
+  <script src="assets/js/app.js" type="module"></script>
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
   <div class="app-shell">
     <header class="brand-header">
       <a class="brand" href="#inicio" aria-label="ENFOCA, inicio"><span class="brand-symbol" aria-hidden="true">◎</span> ENFOCA</a>
-      <span class="header-note">Un momento para ti</span>
+      <div class="header-actions"><span class="header-note">Un momento para ti</span><button class="preferences-link" id="open-preferences" type="button" aria-haspopup="dialog">Preferencias</button></div>
     </header>
 
     <main id="inicio">
@@ -25,21 +25,26 @@
       </section>
 
       <section class="card progress-card" aria-labelledby="progress-title">
-        <div class="card-heading"><h2 id="progress-title">Tu progreso de hoy</h2><span class="badge">Primer paso</span></div>
-        <div class="progress-summary"><strong>0 <span>de 0 objetivos</span></strong><span class="progress-caption">Sin objetivos todavía</span></div>
-        <div class="progress-track" aria-hidden="true"><span></span></div>
+        <div class="card-heading"><h2 id="progress-title">Tu progreso de hoy</h2><span class="badge" id="progress-badge">Cargando</span></div>
+        <div class="progress-summary"><strong><span id="completed-count" class="completed-number">—</span> <span id="progress-total">objetivos</span></strong><span class="progress-caption" id="progress-caption">Consultando tus objetivos…</span></div>
+        <div class="progress-track" id="daily-progress" role="progressbar" aria-label="Objetivos del día completados" aria-valuemin="0" aria-valuemax="100"><span id="progress-fill"></span></div>
         <p class="supporting">Cada día es una nueva oportunidad para enfocar tu atención.</p>
       </section>
 
-      <section class="objectives" aria-labelledby="objectives-title">
-        <div class="section-heading"><h2 id="objectives-title">Objetivos del día</h2><span class="count" aria-label="0 objetivos">0</span></div>
-        <div class="card empty-state">
+      <section class="objectives" id="objetivos" aria-labelledby="objectives-title" aria-busy="true">
+        <div class="section-heading"><h2 id="objectives-title">Objetivos del día</h2><span class="count" id="goal-count" aria-label="Consultando objetivos">—</span></div>
+        <p id="goals-status" class="goals-status" role="status" aria-live="polite">Cargando objetivos…</p>
+        <div id="storage-error" class="storage-error" hidden><p id="storage-error-text" role="alert"></p><button id="retry-storage" class="text-button" type="button">Volver a cargar</button></div>
+        <div class="card empty-state" id="empty-goals" hidden>
           <span class="empty-symbol" aria-hidden="true">＋</span>
           <h3>Haz espacio para lo importante</h3>
-          <p>Aún no tienes objetivos. Pronto podrás elegir qué quieres lograr hoy.</p>
-          <button class="primary-button" type="button" disabled aria-describedby="objectives-note">＋ Crear un objetivo</button>
-          <small id="objectives-note">Disponible próximamente</small>
+          <p>Aún no tienes objetivos para hoy. Elige qué quieres lograr, un paso cada vez.</p>
+          <button class="primary-button" id="create-first-goal" type="button" disabled>＋ Crear un objetivo</button>
+          <small>Guardados en este dispositivo</small>
         </div>
+        <ul class="goal-list" id="goal-list" aria-label="Objetivos activos"></ul>
+        <button class="primary-button add-goal" id="add-goal" type="button" hidden disabled>＋ Añadir objetivo</button>
+        <details class="archived-goals" id="archived-goals" hidden><summary id="archive-summary">Archivados de hoy</summary><p class="archive-note">No cuentan para el progreso. Puedes restaurarlos o eliminarlos definitivamente.</p><ul class="goal-list" id="archived-list" aria-label="Objetivos archivados"></ul></details>
       </section>
 
       <section class="card session-card" aria-labelledby="session-title">
@@ -53,10 +58,64 @@
 
     <nav class="bottom-nav" aria-label="Navegación principal">
       <a class="nav-item active" href="#inicio" aria-current="page"><span aria-hidden="true">⌂</span><span>Inicio</span></a>
-      <button class="nav-item" type="button" disabled aria-label="Objetivos, próximamente"><span aria-hidden="true">◎</span><span>Objetivos</span><small>Próximamente</small></button>
+      <a class="nav-item" href="#objetivos"><span aria-hidden="true">◎</span><span>Objetivos</span></a>
       <button class="nav-item" type="button" disabled aria-label="Concentración, próximamente"><span aria-hidden="true">◷</span><span>Concentración</span><small>Próximamente</small></button>
       <button class="nav-item" type="button" disabled aria-label="Progreso, próximamente"><span aria-hidden="true">▥</span><span>Progreso</span><small>Próximamente</small></button>
     </nav>
   </div>
+  <dialog id="goal-dialog" class="goal-dialog" aria-labelledby="goal-dialog-title">
+    <form id="goal-form">
+      <h2 id="goal-dialog-title">Nuevo objetivo</h2>
+      <p class="dialog-description" id="goal-day-label"></p>
+      <label for="goal-title">¿Qué quieres lograr?</label>
+      <input id="goal-title" name="title" type="text" required maxlength="160" autocomplete="off" aria-describedby="title-help goal-form-error">
+      <small id="title-help">Entre 1 y 160 caracteres. Los objetivos se guardan en este dispositivo.</small>
+      <p id="goal-form-error" class="form-error" role="alert"></p>
+      <div class="dialog-actions"><button id="cancel-goal" class="secondary-button" type="button">Cancelar</button><button id="save-goal" class="primary-button" type="submit">Guardar objetivo</button></div>
+    </form>
+  </dialog>
+  <dialog id="delete-dialog" class="goal-dialog" aria-labelledby="delete-dialog-title" aria-describedby="delete-description">
+    <h2 id="delete-dialog-title">¿Eliminar definitivamente?</h2>
+    <p id="delete-description">Se eliminará este objetivo archivado de este dispositivo. Esta acción no se puede deshacer.</p>
+    <p id="delete-goal-title" class="delete-goal-title"></p>
+    <p id="delete-error" class="form-error" role="alert"></p>
+    <div class="dialog-actions"><button id="cancel-delete" class="secondary-button" type="button">Conservar objetivo</button><button id="confirm-delete" class="danger-button" type="button">Eliminar definitivamente</button></div>
+  </dialog>
+  <dialog id="onboarding-dialog" class="goal-dialog preferences-dialog" aria-labelledby="onboarding-title" aria-describedby="onboarding-privacy">
+    <p class="eyebrow">UN COMIENZO A TU RITMO</p>
+    <p id="onboarding-privacy" class="preferences-intro">Todas las preguntas son opcionales. Tus respuestas se quedan en este dispositivo.</p>
+    <div id="onboarding-steps">
+      <p id="onboarding-step-label" class="step-label">Paso 1 de 6</p>
+      <div id="onboarding-progress" class="progress-track" role="progressbar" aria-label="Paso del onboarding" aria-valuemin="0" aria-valuemax="6" aria-valuenow="1"><span></span></div>
+      <h2 id="onboarding-title" tabindex="-1">¿Qué quieres conseguir con ENFOCA?</h2>
+      <form id="onboarding-form" novalidate>
+        <div id="onboarding-question"></div>
+        <p id="onboarding-error" class="form-error" role="alert"></p>
+        <div class="dialog-actions"><button id="onboarding-back" class="secondary-button" type="button">Anterior</button><button id="onboarding-next" class="primary-button" type="submit">Siguiente</button></div>
+        <button id="onboarding-skip-question" class="text-button" type="button">Omitir esta pregunta</button>
+      </form>
+      <button id="onboarding-skip" class="text-button skip-onboarding" type="button">Omitir por ahora e ir a Inicio</button>
+      <button id="onboarding-exit" class="text-button" type="button" hidden>Ir a Inicio sin guardar</button>
+    </div>
+    <div id="onboarding-welcome" hidden>
+      <p class="welcome-symbol" aria-hidden="true">◎</p>
+      <p class="welcome-message" tabindex="-1" id="onboarding-welcome-message">Bienvenido a ENFOCA. Vamos a organizar tus días a tu ritmo.</p>
+      <button id="onboarding-enter" class="primary-button" type="button">Entrar en ENFOCA</button>
+    </div>
+  </dialog>
+  <dialog id="preferences-dialog" class="goal-dialog preferences-dialog" aria-labelledby="preferences-title" aria-describedby="preferences-privacy">
+    <p class="eyebrow">TU ESPACIO PERSONAL</p>
+    <h2 id="preferences-title" tabindex="-1">Perfil y preferencias</h2>
+    <p id="preferences-privacy" class="preferences-intro">Solo en este dispositivo. Puedes cambiar o borrar cualquier respuesta; después pulsa Guardar cambios.</p>
+    <p id="preferences-status" class="goals-status" role="status" aria-live="polite"></p>
+    <p id="preferences-error" class="form-error" role="alert"></p>
+    <button id="preferences-retry" class="text-button" type="button" hidden>Volver a cargar preferencias</button>
+    <form id="preferences-form" novalidate>
+      <div id="preferences-fields"></div>
+      <div class="dialog-actions"><button id="preferences-close" class="secondary-button" type="button">Volver a Inicio</button><button id="preferences-save" class="primary-button" type="submit">Guardar cambios</button></div>
+    </form>
+    <button id="preferences-onboarding" class="text-button" type="button">Responder paso a paso</button>
+  </dialog>
+  <noscript><p class="storage-error">Activa JavaScript para gestionar y guardar tus objetivos.</p></noscript>
 </body>
 </html>

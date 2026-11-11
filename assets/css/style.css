@@ -80,3 +80,69 @@ small { color: var(--muted); font-size: 10px; }
   .badge { font-size: 9px; }
   .card-heading h2 { font-size: 14px; }
 }
+
+/* Gestión local de objetivos: conserva las tarjetas y la paleta original. */
+[hidden] { display: none !important; }
+.progress-summary strong .completed-number { color: var(--accent); font-size: 32px; font-weight: 600; }
+.goals-status { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.goal-list { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+.goal-item { min-width: 0; }
+.goal-title { margin: 0; overflow-wrap: anywhere; }
+.goal-state { color: var(--muted); margin: 6px 0 10px; font-size: 12px; }
+.is-completed .goal-title { text-decoration: line-through; color: var(--muted); }
+.is-completed .goal-state { color: var(--accent); }
+.goal-actions { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.text-button { min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: var(--accent); font: inherit; font-size: 13px; text-align: left; }
+.add-goal { display: block; margin: 16px auto 0; }
+.archived-goals { margin-top: 20px; }
+.archived-goals summary { min-height: 44px; padding-block: 10px; color: var(--muted); cursor: pointer; font-size: 13px; }
+.archive-note { font-size: 12px; color: var(--muted); }
+.storage-error { border: 1px solid #f2ae994d; border-radius: 12px; padding: 12px; margin-block: 12px; color: #ffd0c0; font-size: 13px; }
+.storage-error p { margin: 0; }
+.goal-dialog { width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 48px); overflow-y: auto; padding: 24px; border: 1px solid #b9c8d833; border-radius: 22px; background: var(--card); color: var(--text); }
+.goal-dialog::backdrop { background: #101b2bcc; }
+.dialog-description, .goal-dialog > p { color: var(--muted); font-size: 13px; }
+.goal-dialog label { display: block; margin-block: 18px 8px; font-size: 14px; }
+.goal-dialog input { width: 100%; min-height: 48px; padding: 12px; border-radius: 10px; border: 1px solid #b9c8d866; background: var(--background); color: var(--text); font: inherit; font-size: 16px; }
+.goal-dialog small { display: block; margin-top: 8px; font-size: 12px; }
+.form-error { color: #ffd0c0; font-size: 13px; overflow-wrap: anywhere; }
+.form-error:empty { display: none; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.dialog-actions > button { flex: 1 1 140px; width: auto; max-width: none; }
+.dialog-actions .secondary-button { display: block; }
+.danger-button { min-height: 46px; border: 1px solid #f2ae9980; border-radius: 12px; padding: 12px; background: transparent; color: #ffd0c0; font-size: 13px; }
+.danger-text { color: #ffd0c0; }
+.delete-goal-title { overflow-wrap: anywhere; }
+button:enabled { cursor: pointer; }
+button:disabled { opacity: .65; }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* Preferencias locales y bienvenida: misma paleta, controles nativos. */
+.header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.preferences-link { min-height: 44px; padding: 6px 12px; border: 1px solid #78dfb14d; border-radius: 12px; color: var(--accent); background: transparent; font-size: 12px; }
+.preferences-dialog { width: min(520px, calc(100% - 32px)); }
+.preferences-intro { color: var(--muted); font-size: 13px; }
+.preferences-dialog h2 { font-size: 23px; line-height: 1.35; margin-block: 18px; }
+.preferences-dialog h2:focus { outline: none; }
+.step-label { color: var(--accent); font-size: 12px; margin-block: 20px 8px; }
+.question-group { border: 0; padding: 0; min-width: 0; margin: 0 0 20px; }
+.question-group legend { max-width: 100%; font-size: 16px; line-height: 1.4; font-weight: 600; padding: 0; }
+.question-hint { font-size: 12px; color: var(--muted); margin-block: 8px 12px; }
+.answer-choices { display: grid; gap: 10px; margin-top: 12px; }
+.preferences-dialog .answer-choice { display: flex; align-items: center; gap: 12px; min-height: 52px; margin: 0; padding: 12px; border: 1px solid #b9c8d833; border-radius: 12px; font-size: 14px; cursor: pointer; }
+.preferences-dialog .answer-choice:has(input:checked) { border-color: var(--accent); background: #78dfb10a; }
+.preferences-dialog .answer-choice input { flex: 0 0 20px; width: 20px; height: 20px; min-height: 20px; padding: 0; margin: 0; accent-color: var(--accent); }
+.answer-choice span { min-width: 0; overflow-wrap: anywhere; }
+.time-selects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.time-selects label { font-size: 12px; }
+.time-selects select { width: 100%; min-height: 48px; padding: 10px; border: 1px solid #b9c8d866; border-radius: 10px; color: var(--text); background: var(--background); font: inherit; font-size: 16px; }
+select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.clear-answer { color: var(--muted); font-size: 12px; }
+.skip-onboarding { display: block; border-top: 1px solid #b9c8d826; margin-top: 10px; width: 100%; }
+#preferences-fields .question-group { padding-block: 16px; border-bottom: 1px solid #b9c8d826; }
+.welcome-symbol { color: var(--accent); font-size: 56px; margin: 20px 0; }
+.welcome-message { font-size: 22px; line-height: 1.5; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+#onboarding-question .question-group { animation: question-appear 160ms ease-out; }
+@keyframes question-appear { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { #onboarding-question .question-group { animation: none; } }
