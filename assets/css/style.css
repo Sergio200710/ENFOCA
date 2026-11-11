@@ -146,3 +146,30 @@ select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 #onboarding-question .question-group { animation: question-appear 160ms ease-out; }
 @keyframes question-appear { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { #onboarding-question .question-group { animation: none; } }
+
+/* Agenda: prolonga los componentes existentes sin sustituir Inicio. */
+.agenda { margin-block: 30px; scroll-margin-top: 20px; }
+.agenda-intro { font-size: 13px; color: var(--muted); }
+.agenda-date-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+.agenda-date { width: 100%; min-width: 0; min-height: 48px; padding: 10px 12px; border: 1px solid #b9c8d84d; border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 16px; }
+.agenda-day-actions { display: flex; justify-content: space-between; gap: 12px; }
+.activity-hours { color: var(--accent); font-size: 18px; font-variant-numeric: tabular-nums; margin: 0 0 10px; }
+.activity-item { min-width: 0; }
+.activity-timing { color: var(--muted); font-size: 12px; }
+.activity-detail { margin-block: 10px; }
+.activity-detail summary { min-height: 44px; padding-block: 10px; font-size: 12px; color: var(--muted); cursor: pointer; }
+.activity-data { font-size: 12px; }
+.activity-data dt { color: var(--muted); margin-top: 10px; }
+.activity-data dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+.schedule-history { padding-left: 18px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.schedule-history li { margin-block: 8px; }
+.agenda-dialog { width: min(520px, calc(100% - 32px)); }
+.agenda-dialog input[type=date], .agenda-dialog select { width: 100%; min-width: 0; min-height: 48px; padding: 10px; border: 1px solid #b9c8d866; border-radius: 10px; color: var(--text); background: var(--background); font: inherit; font-size: 16px; }
+.activity-time-fields { display: grid; gap: 16px; margin-top: 20px; }
+.activity-time-fields .question-group { margin: 0; }
+.activity-time-fields legend { font-size: 14px; }
+.agenda-dialog .time-selects label { font-size: 11px; margin-top: 8px; }
+.agenda-dialog .overlap-choice { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.agenda-dialog .overlap-choice input { flex: 0 0 22px; width: 22px; min-height: 22px; height: 22px; padding: 0; margin: 0; accent-color: var(--accent); }
+.bottom-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 399px) { .bottom-nav .nav-item { font-size: 9px; } }

@@ -6,6 +6,7 @@ import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, resolve, sep, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runAgendaBrowserTests, checkVersionTwoMigration } from "./agenda-browser.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const candidates = [process.argv[2], "C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].filter(Boolean);
@@ -84,7 +85,7 @@ try {
   await wait(ready);
   await wait(`document.querySelector('#onboarding-dialog')?.open`);
   check(await evaluate(`document.querySelector('#onboarding-step-label').textContent==='Paso 1 de 6' && document.activeElement.id==='onboarding-title'`), "primera apertura: bienvenida con foco en la pregunta");
-  check(await evaluate(`(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});const version=db.version;const value=await new Promise((resolve,reject)=>{const r=db.transaction('goals').objectStore('goals').get('migration-fixture');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});db.close();return version===2&&value.version===7&&value.title==='Objetivo anterior'&&value.archivedAt==='1999-12-31T13:00:00Z'})()`), "migración v1 a v2 conserva el objetivo archivado y sus metadatos");
+  check(await evaluate(`(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});const version=db.version;const value=await new Promise((resolve,reject)=>{const r=db.transaction('goals').objectStore('goals').get('migration-fixture');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});db.close();return version===3&&value.version===7&&value.title==='Objetivo anterior'&&value.archivedAt==='1999-12-31T13:00:00Z'})()`), "migración v1 a v3 conserva el objetivo archivado y sus metadatos");
   await command("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await command("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   check(await evaluate(`document.activeElement.type==='checkbox'`), "teclado: Tab alcanza la primera opción nativa");
@@ -229,6 +230,8 @@ try {
     check(await evaluate(`(()=>{const r=document.querySelector('#goal-dialog').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.height<=innerHeight})()`), `formulario dentro de pantalla a ${width}px`);
     await evaluate(`document.querySelector('#cancel-goal').click()`);
   }
+  await checkVersionTwoMigration({ command, check, requestHandler: server.listeners("request")[0] });
+  await runAgendaBrowserTests({ command, evaluate, wait, check });
   check(errors.length===0, "sin excepciones JavaScript no controladas en Chromium");
   const denied = await command("Page.addScriptToEvaluateOnNewDocument", { source: `window.deniedOriginalOpen=IDBFactory.prototype.open;IDBFactory.prototype.open=function(){throw new DOMException('denied','SecurityError')}` });
   await command("Page.reload");

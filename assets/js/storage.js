@@ -1,18 +1,19 @@
 const DB_NAME = "enfoca";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE = "goals";
 
-export class StorageError extends Error {
+export class OperationError extends Error {}
+export class StorageError extends OperationError {
   constructor(message, options) { super(message, options); this.name = "StorageError"; }
 }
-export class ConflictError extends Error {
+export class ConflictError extends OperationError {
   constructor(message = "Este objetivo cambió en otra pestaña. Vuelve a cargar y revisa su estado antes de intentarlo otra vez.") {
     super(message);
     this.name = "ConflictError";
   }
 }
 function storageError(error) {
-  if (error instanceof StorageError || error instanceof ConflictError) return error;
+  if (error instanceof OperationError) return error;
   return new StorageError(error?.name === "QuotaExceededError"
     ? "No hay espacio disponible para guardar. Libera espacio en el dispositivo e inténtalo de nuevo."
     : "No se pudo acceder al almacenamiento local. Comprueba los permisos del navegador y vuelve a intentarlo.", { cause: error });
@@ -46,6 +47,11 @@ export function createLocalDatabase(factory) {
           store.createIndex("date", "date", { unique: false });
         }
         if (!db.objectStoreNames.contains("profiles")) db.createObjectStore("profiles", { keyPath: "id" });
+        // v2 → v3: solo añade actividades; goals y profiles permanecen intactos.
+        if (!db.objectStoreNames.contains("activities")) {
+          const activities = db.createObjectStore("activities", { keyPath: "id" });
+          activities.createIndex("date", "schedule.date", { unique: false });
+        }
       };
       request.onerror = () => fail(request.error);
       request.onblocked = () => fail(new StorageError("Otra pestaña impide abrir el almacenamiento. Ciérrala y vuelve a cargar."));
@@ -75,7 +81,7 @@ export function createLocalDatabase(factory) {
         transaction.oncomplete = () => resolve(result);
         transaction.onabort = () => reject(storageError(failure || transaction.error));
         transaction.onerror = () => {};
-        work(transaction.objectStore(storeName), (value) => { result = value; }, (error) => { failure = error; transaction.abort(); });
+        work(transaction.objectStore(Array.isArray(storeName) ? storeName[0] : storeName), (value) => { result = value; }, (error) => { failure = error; transaction.abort(); }, transaction);
       } catch (error) {
         if (transaction) {
           failure = error;
@@ -106,6 +112,12 @@ export function createGoalRepository(factory) {
     });
   }
   return {
+    listAll() {
+      return transact("readonly", (store, done) => {
+        const request = store.getAll();
+        request.onsuccess = () => done(request.result);
+      });
+    },
     list(date) {
       return transact("readonly", (store, done) => {
         const request = store.index("date").getAll(date);

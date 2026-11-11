@@ -2,6 +2,7 @@ import { createGoalRepository } from "./storage.js";
 import { createGoalService, localDate } from "./goals.js";
 import { createGoalsUI } from "./ui.js";
 import { mountProfile } from "./profile-ui.js";
+import { mountAgenda } from "./agenda-ui.js";
 
 const service = createGoalService(createGoalRepository());
 const state = { date: localDate(), goals: [], loaded: false, busy: false, error: "", message: "Cargando objetivos…" };
@@ -120,3 +121,4 @@ window.setInterval(() => { if (updateWelcome()) void load(); }, 30_000);
 updateWelcome();
 void load();
 mountProfile();
+mountAgenda();

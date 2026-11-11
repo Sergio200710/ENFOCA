@@ -47,6 +47,21 @@
         <details class="archived-goals" id="archived-goals" hidden><summary id="archive-summary">Archivados de hoy</summary><p class="archive-note">No cuentan para el progreso. Puedes restaurarlos o eliminarlos definitivamente.</p><ul class="goal-list" id="archived-list" aria-label="Objetivos archivados"></ul></details>
       </section>
 
+      <section class="agenda" id="agenda" aria-labelledby="agenda-title" aria-busy="true">
+        <div class="section-heading"><h2 id="agenda-title">Agenda diaria</h2><span class="badge">A tu hora</span></div>
+        <p class="agenda-intro">Tu planificación y lo que sucede, por separado. Nada se completa automáticamente.</p>
+        <label class="agenda-date-label" for="agenda-date">Día de la agenda</label>
+        <input id="agenda-date" class="agenda-date" type="date" min="0001-01-01" max="9999-12-31" required>
+        <div class="agenda-day-actions"><button class="text-button" id="agenda-previous" type="button" aria-label="Consultar el día anterior">← Anterior</button><button class="text-button" id="agenda-today" type="button">Hoy</button><button class="text-button" id="agenda-next" type="button" aria-label="Consultar el día siguiente">Siguiente →</button></div>
+        <p class="goals-status" id="agenda-status" role="status" aria-live="polite">Cargando agenda…</p>
+        <div class="storage-error" id="agenda-error" hidden><p id="agenda-error-text" role="alert"></p><button class="text-button" id="agenda-retry" type="button">Volver a cargar agenda</button></div>
+        <div class="card empty-state" id="agenda-empty" hidden><span class="empty-symbol" aria-hidden="true">◷</span><h3>Un día por organizar</h3><p>No hay actividades para esta fecha. Reserva un horario para lo que te importa.</p></div>
+        <ol class="goal-list" id="activity-list" aria-label="Actividades ordenadas por hora"></ol>
+        <button class="primary-button add-goal" id="agenda-create" type="button" disabled>＋ Crear actividad</button>
+        <details class="archived-goals" id="agenda-removed" hidden><summary id="agenda-removed-summary">Eliminadas de la agenda</summary><p class="archive-note">El historial se conserva en este dispositivo. Estas actividades no ocupan horario.</p><ol class="goal-list" id="activity-removed-list" aria-label="Historial de actividades eliminadas"></ol></details>
+        <p class="archive-note">Inicio anticipado o a la hora exacta: puntual. Empezar después o terminar después del final previsto: con retraso. Sin margen de cortesía.</p>
+      </section>
+
       <section class="card session-card" aria-labelledby="session-title">
         <div class="session-icon" aria-hidden="true">◷</div>
         <div class="session-content"><p class="eyebrow">TU PRÓXIMA PAUSA CON INTENCIÓN</p><h2 id="session-title">Un espacio para concentrarte</h2><p>No tienes ninguna sesión programada.</p></div>
@@ -59,6 +74,7 @@
     <nav class="bottom-nav" aria-label="Navegación principal">
       <a class="nav-item active" href="#inicio" aria-current="page"><span aria-hidden="true">⌂</span><span>Inicio</span></a>
       <a class="nav-item" href="#objetivos"><span aria-hidden="true">◎</span><span>Objetivos</span></a>
+      <a class="nav-item" href="#agenda"><span aria-hidden="true">▦</span><span>Agenda</span></a>
       <button class="nav-item" type="button" disabled aria-label="Concentración, próximamente"><span aria-hidden="true">◷</span><span>Concentración</span><small>Próximamente</small></button>
       <button class="nav-item" type="button" disabled aria-label="Progreso, próximamente"><span aria-hidden="true">▥</span><span>Progreso</span><small>Próximamente</small></button>
     </nav>
@@ -115,6 +131,30 @@
       <div class="dialog-actions"><button id="preferences-close" class="secondary-button" type="button">Volver a Inicio</button><button id="preferences-save" class="primary-button" type="submit">Guardar cambios</button></div>
     </form>
     <button id="preferences-onboarding" class="text-button" type="button">Responder paso a paso</button>
+  </dialog>
+  <dialog id="activity-dialog" class="goal-dialog agenda-dialog" aria-labelledby="activity-dialog-title">
+    <form id="activity-form" novalidate>
+      <h2 id="activity-dialog-title">Nueva actividad</h2>
+      <label for="activity-title">¿Qué vas a hacer?</label>
+      <input id="activity-title" type="text" maxlength="160" required autocomplete="off" aria-describedby="activity-title-help">
+      <small id="activity-title-help">Entre 1 y 160 caracteres.</small>
+      <label for="activity-date">Fecha planificada</label>
+      <input id="activity-date" type="date" min="0001-01-01" max="9999-12-31" required>
+      <div class="activity-time-fields" id="activity-times"></div>
+      <p class="archive-note" id="activity-schedule-help">El final debe ser posterior al inicio, dentro del mismo día. El horario se fija al iniciar, omitir o cancelar.</p>
+      <label for="activity-goal">Vincular a un objetivo (opcional)</label>
+      <select id="activity-goal"><option value="">Sin objetivo vinculado</option></select>
+      <p class="archive-note">La actividad no completa ni modifica el objetivo vinculado.</p>
+      <div class="storage-error" id="activity-overlap" hidden><p>Este horario se solapa con:</p><ul id="activity-overlap-list"></ul><label class="overlap-choice" for="activity-overlap-confirm"><input id="activity-overlap-confirm" type="checkbox"><span>He revisado los solapamientos y quiero guardar este horario.</span></label></div>
+      <p class="form-error" id="activity-form-error" role="alert"></p>
+      <div class="dialog-actions"><button class="secondary-button" id="activity-form-cancel" type="button">Cancelar</button><button class="primary-button" id="activity-save" type="submit">Guardar actividad</button></div>
+    </form>
+  </dialog>
+  <dialog id="activity-delete-dialog" class="goal-dialog" aria-labelledby="activity-delete-title" aria-describedby="activity-delete-description">
+    <h2 id="activity-delete-title">¿Eliminar de la agenda?</h2>
+    <p id="activity-delete-description">Se quitará de las actividades visibles. Sus horarios y su historial se conservarán en este dispositivo.</p>
+    <p class="delete-goal-title" id="activity-delete-name"></p><p class="form-error" id="activity-delete-error" role="alert"></p>
+    <div class="dialog-actions"><button class="secondary-button" id="activity-delete-cancel" type="button">Conservar actividad</button><button class="danger-button" id="activity-delete-confirm" type="button">Eliminar de la agenda</button></div>
   </dialog>
   <noscript><p class="storage-error">Activa JavaScript para gestionar y guardar tus objetivos.</p></noscript>
 </body>
