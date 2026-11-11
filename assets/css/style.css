@@ -173,3 +173,20 @@ select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .agenda-dialog .overlap-choice input { flex: 0 0 22px; width: 22px; min-height: 22px; height: 22px; padding: 0; margin: 0; accent-color: var(--accent); }
 .bottom-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 @media (max-width: 399px) { .bottom-nav .nav-item { font-size: 9px; } }
+
+/* Resumen derivado: mantiene la misma identidad y distingue agenda y objetivos. */
+.daily-summary { margin-block: 30px; scroll-margin-top: 20px; }
+.summary-day-label { color: var(--muted); font-size: 14px; }
+.summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block: 16px; }
+.summary-grid > div { background: var(--card); border: 1px solid #b9c8d80d; border-radius: 16px; padding: 16px; min-width: 0; }
+.summary-grid dt { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.summary-grid dd { color: var(--accent); font-size: 28px; font-weight: 600; margin: 6px 0 0; }
+.motivation-card { margin-block: 20px; }
+.motivation-card > p:not(.eyebrow) { font-size: 15px; margin: 0 0 12px; }
+.motivation-card small { font-size: 11px; }
+.summary-celebration { border-color: #78dfb14d; margin-bottom: 16px; }
+.summary-celebration summary, .summary-rules summary { cursor: pointer; min-height: 44px; padding-block: 10px; font-size: 13px; color: var(--accent); }
+.summary-celebration p { font-size: 14px; color: var(--muted); }
+.summary-rules { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.summary-history-select { width: 100%; min-width: 0; min-height: 48px; padding: 10px; border: 1px solid #b9c8d84d; border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; }
+@media (min-width: 600px) { .summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

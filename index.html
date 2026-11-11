@@ -62,6 +62,38 @@
         <p class="archive-note">Inicio anticipado o a la hora exacta: puntual. Empezar después o terminar después del final previsto: con retraso. Sin margen de cortesía.</p>
       </section>
 
+      <section class="daily-summary" id="resumen" aria-labelledby="summary-title" aria-busy="true">
+        <div class="section-heading"><h2 id="summary-title">Resumen diario</h2><span class="badge">Actividades reales</span></div>
+        <p class="agenda-intro">El cumplimiento de tu agenda, separado del progreso de tus objetivos.</p>
+        <label class="agenda-date-label" for="summary-date">Día del resumen</label>
+        <input class="agenda-date" id="summary-date" type="date" min="0001-01-01" max="9999-12-31" required>
+        <div class="agenda-day-actions"><button class="text-button" id="summary-previous" type="button" aria-label="Resumen del día anterior">← Anterior</button><button class="text-button" id="summary-today" type="button">Hoy</button><button class="text-button" id="summary-next" type="button" aria-label="Resumen del día siguiente">Siguiente →</button></div>
+        <p class="summary-day-label" id="summary-date-label"></p>
+        <p class="goals-status" id="summary-status" role="status" aria-live="polite">Cargando resumen…</p>
+        <div class="storage-error" id="summary-error" hidden><p id="summary-error-text" role="alert"></p></div>
+        <p class="archive-note" id="summary-save-warning" role="status" hidden></p>
+        <button class="text-button" id="summary-retry" type="button">Actualizar resumen</button>
+        <div id="summary-content" hidden>
+          <p class="archive-note" id="summary-empty" hidden>No hay actividades registradas para esta fecha. No se atribuye ningún cumplimiento.</p>
+          <dl class="summary-grid" aria-label="Recuento diario de actividades">
+            <div><dt>Planificadas</dt><dd id="summary-planned">—</dd></div>
+            <div><dt>Completadas</dt><dd id="summary-completed">—</dd></div>
+            <div><dt>Pendientes</dt><dd id="summary-pending">—</dd></div>
+            <div><dt>Omitidas</dt><dd id="summary-skipped">—</dd></div>
+            <div><dt>Canceladas</dt><dd id="summary-cancelled">—</dd></div>
+            <div><dt>Completadas puntualmente</dt><dd id="summary-on-time">—</dd></div>
+            <div><dt>Completadas con retraso</dt><dd id="summary-late">—</dd></div>
+            <div><dt>Cumplimiento</dt><dd id="summary-percentage">—</dd></div>
+          </dl>
+          <p class="archive-note" id="summary-ratio"></p>
+          <div class="progress-track" id="summary-progress" role="progressbar" aria-label="Cumplimiento de actividades" aria-valuemin="0" aria-valuemax="100" aria-describedby="summary-ratio"><span></span></div>
+          <div class="card motivation-card"><p class="eyebrow">UN MOMENTO PARA RECONOCER TU DÍA</p><p id="summary-motivation"></p><small>Mensaje según los estados registrados en tu agenda.</small></div>
+          <details class="card summary-celebration" id="summary-celebration" hidden><summary>Consultar felicitación del día</summary><h3 id="summary-celebration-title"></h3><p id="summary-celebration-text"></p></details>
+          <details class="summary-rules"><summary>Cómo se calcula</summary><p>Completadas ÷ actividades exigibles × 100. Las exigibles incluyen programadas, en curso, completadas y omitidas. Las canceladas y eliminadas se excluyen del denominador. Las planificadas incluyen las canceladas, pero no las eliminadas.</p><p>Pendientes incluye programadas y en curso. Cumplir no significa ser puntual: las completadas con retraso también cuentan como completadas.</p><p>Se redondea al entero más cercano y se limita al 99% mientras quede alguna actividad exigible sin completar. Sin actividades exigibles se muestra «—».</p><p>La felicitación se abre automáticamente una sola vez por fecha, para el día actual. Puedes consultarla después. Una racha requiere al menos tres días naturales consecutivos con actividades exigibles completadas; un día vacío o sin exigibles la interrumpe.</p></details>
+          <label class="agenda-date-label" for="summary-history">Días anteriores con registros</label><select class="summary-history-select" id="summary-history"><option value="">Sin días anteriores registrados</option></select>
+        </div>
+      </section>
+
       <section class="card session-card" aria-labelledby="session-title">
         <div class="session-icon" aria-hidden="true">◷</div>
         <div class="session-content"><p class="eyebrow">TU PRÓXIMA PAUSA CON INTENCIÓN</p><h2 id="session-title">Un espacio para concentrarte</h2><p>No tienes ninguna sesión programada.</p></div>
@@ -76,7 +108,7 @@
       <a class="nav-item" href="#objetivos"><span aria-hidden="true">◎</span><span>Objetivos</span></a>
       <a class="nav-item" href="#agenda"><span aria-hidden="true">▦</span><span>Agenda</span></a>
       <button class="nav-item" type="button" disabled aria-label="Concentración, próximamente"><span aria-hidden="true">◷</span><span>Concentración</span><small>Próximamente</small></button>
-      <button class="nav-item" type="button" disabled aria-label="Progreso, próximamente"><span aria-hidden="true">▥</span><span>Progreso</span><small>Próximamente</small></button>
+      <a class="nav-item" href="#resumen"><span aria-hidden="true">▥</span><span>Progreso</span></a>
     </nav>
   </div>
   <dialog id="goal-dialog" class="goal-dialog" aria-labelledby="goal-dialog-title">

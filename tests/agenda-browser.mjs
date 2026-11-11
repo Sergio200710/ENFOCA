@@ -1,8 +1,8 @@
 import { createServer } from "node:http";
 
-// Origen y base temporales independientes para comprobar v2 → v3 sin borrar
+// Origen y base temporales independientes para comprobar migraciones sin borrar
 // las fixtures del resto de la suite ni acceder a perfiles reales del navegador.
-export async function checkVersionTwoMigration({ command, check, requestHandler }) {
+export async function checkSchemaMigration({ command, check, requestHandler, fromVersion = 2 }) {
   const server = createServer(requestHandler);
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   let targetId;
@@ -19,13 +19,15 @@ export async function checkVersionTwoMigration({ command, check, requestHandler 
     const before = await evaluate(`(async()=>{
       const goal={id:crypto.randomUUID(),title:'Fixture conservada',date:'2001-01-01',status:'pending',version:3,createdAt:'2001-01-01T00:00:00Z'};
       const profile={id:'local',schemaVersion:1,version:5,onboardingStatus:'skipped',createdAt:'2001-01-01T00:00:00Z',updatedAt:'2001-01-01T00:00:00Z',syncState:'pending',answers:{goals:['time','balance'],sport:'sometimes',procrastination:'rarely',wakeTime:'07:05',bedTime:'23:30',reminders:'hourly'}};
-      const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca',2);r.onupgradeneeded=()=>{r.result.createObjectStore('goals',{keyPath:'id'}).createIndex('date','date');r.result.createObjectStore('profiles',{keyPath:'id'})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
-      await new Promise((resolve,reject)=>{const tx=db.transaction(['goals','profiles'],'readwrite');tx.objectStore('goals').add(goal);tx.objectStore('profiles').add(profile);tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error)});db.close();return {goal,profile};
+      const activity={id:crypto.randomUUID(),title:'Actividad conservada',schedule:{date:'2001-01-01',startTime:'09:00',endTime:'10:00',startAt:'2001-01-01T09:00:00.000Z',endAt:'2001-01-01T10:00:00.000Z',timeZone:'UTC'},status:'scheduled',version:2,schemaVersion:1,actualStartAt:null,actualEndAt:null,deletedAt:null,scheduleHistory:[],stateHistory:[],reminders:[],createdAt:'2001-01-01T00:00:00Z'};
+      const version=${fromVersion};
+      const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca',version);r.onupgradeneeded=()=>{r.result.createObjectStore('goals',{keyPath:'id'}).createIndex('date','date');r.result.createObjectStore('profiles',{keyPath:'id'});if(version>=3)r.result.createObjectStore('activities',{keyPath:'id'}).createIndex('date','schedule.date')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+      await new Promise((resolve,reject)=>{const tx=db.transaction(version>=3?['goals','profiles','activities']:['goals','profiles'],'readwrite');tx.objectStore('goals').add(goal);tx.objectStore('profiles').add(profile);if(version>=3)tx.objectStore('activities').add(activity);tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error)});db.close();return {goal,profile,activity:version>=3?activity:null};
     })()`);
     await command("Page.navigate", { url: origin }, session);
     for(let i=0;i<100;i++){if(await evaluate(`document.querySelector('#agenda')?.getAttribute('aria-busy')==='false'&&!document.querySelector('#agenda-create').disabled`))break;await new Promise(r=>setTimeout(r,50));}
-    const after = await evaluate(`(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});const get=(store)=>new Promise(resolve=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>resolve(r.result[0])});const result={version:db.version,stores:[...db.objectStoreNames],goal:await get('goals'),profile:await get('profiles')};db.close();return result})()`);
-    check(after.version===3&&after.stores.includes('activities')&&JSON.stringify(before.goal)===JSON.stringify(after.goal)&&JSON.stringify(before.profile)===JSON.stringify(after.profile),'migración v2 a v3 conserva íntegramente objetivo y perfil');
+    const after = await evaluate(`(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});const get=(store)=>new Promise(resolve=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>resolve(r.result[0]??null)});const result={version:db.version,stores:[...db.objectStoreNames],goal:await get('goals'),profile:await get('profiles'),activity:await get('activities')};db.close();return result})()`);
+    check(after.version===4&&after.stores.includes('dailyMessages')&&JSON.stringify(before.goal)===JSON.stringify(after.goal)&&JSON.stringify(before.profile)===JSON.stringify(after.profile)&&JSON.stringify(before.activity)===JSON.stringify(after.activity),`migración v${fromVersion} a v4 conserva íntegramente objetivos, perfil y actividades`);
   } finally {
     if(targetId)await command('Target.closeTarget',{targetId},null);
     server.closeAllConnections();await new Promise(resolve=>server.close(resolve));

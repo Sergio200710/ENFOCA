@@ -1,5 +1,5 @@
 const DB_NAME = "enfoca";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const STORE = "goals";
 
 export class OperationError extends Error {}
@@ -52,6 +52,9 @@ export function createLocalDatabase(factory) {
           const activities = db.createObjectStore("activities", { keyPath: "id" });
           activities.createIndex("date", "schedule.date", { unique: false });
         }
+        // v3 → v4: solo un marcador por fecha para la felicitación automática.
+        // Los recuentos y porcentajes siguen siendo cálculos derivados.
+        if (!db.objectStoreNames.contains("dailyMessages")) db.createObjectStore("dailyMessages", { keyPath: "date" });
       };
       request.onerror = () => fail(request.error);
       request.onblocked = () => fail(new StorageError("Otra pestaña impide abrir el almacenamiento. Ciérrala y vuelve a cargar."));

@@ -1,26 +1,33 @@
 // Prueba sin dependencias: servidor temporal local y perfil Chromium aislado.
 // Ejecutar: node tests/browser.mjs [ruta al ejecutable Chrome/Edge]
+// --pwa queda reservado para el borrador de fase 7, todavía sin integrar.
 import { createServer } from "node:http";
 import { readFile, mkdtemp, rm, access } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, resolve, sep, extname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { runAgendaBrowserTests, checkVersionTwoMigration } from "./agenda-browser.mjs";
+import { runAgendaBrowserTests, checkSchemaMigration } from "./agenda-browser.mjs";
+import { runSummaryBrowserTests } from "./summary-browser.mjs";
+import { runPWABrowserTests } from "./pwa-browser.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const candidates = [process.argv[2], "C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].filter(Boolean);
+const candidates = [process.argv.slice(2).find((argument) => !argument.startsWith('--')), "C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].filter(Boolean);
 let executable;
 for (const candidate of candidates) { try { await access(candidate); executable = candidate; break; } catch {} }
 if (!executable) throw new Error("No se encontró Chrome/Edge. Indica su ejecutable como argumento.");
+let pwaTestRelease = null;
 const server = createServer(async (req, res) => {
   try {
-    const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
+    let pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
+    if (pathname.startsWith("/ENFOCA/")) pathname = pathname.slice("/ENFOCA".length);
     if (pathname === "/__test__") { res.writeHead(200, { "Content-Type": "text/html" }).end("<!doctype html><html lang='es'><title>ENFOCA test</title></html>"); return; }
+    if (pathname === "/api/private") { res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "private, no-store" }).end('{"fixture":true}'); return; }
     const path = resolve(root, "." + (pathname === "/" ? "/index.html" : pathname));
     if (!path.startsWith(resolve(root) + sep)) { res.writeHead(403).end(); return; }
-    const body = await readFile(path);
-    res.writeHead(200, { "Content-Type": ({ ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8" })[extname(path)] || "application/octet-stream", "Cache-Control": "no-store" });
+    let body = await readFile(path);
+    if (pathname === "/service-worker.js" && pwaTestRelease) body = Buffer.from(body.toString('utf8').replace('const RELEASE = "1.0.0";', `const RELEASE = ${JSON.stringify(pwaTestRelease)};`));
+    res.writeHead(200, { "Content-Type": ({ ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml" })[extname(path)] || "application/octet-stream", "Cache-Control": "no-store" });
     res.end(body);
   } catch { res.writeHead(404).end(); }
 });
@@ -33,6 +40,7 @@ let sequence = 0;
 let sessionId;
 const pending = new Map();
 const errors = [];
+const networkResponses = [];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 try {
@@ -47,6 +55,7 @@ try {
   socket.addEventListener("message", (event) => {
     const message = JSON.parse(event.data);
     if (message.method === "Runtime.exceptionThrown") errors.push(message.params.exceptionDetails);
+    if (message.method === "Network.responseReceived") networkResponses.push(message.params.response);
     const item = pending.get(message.id);
     if (item) { pending.delete(message.id); clearTimeout(item.timeout); message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); }
   });
@@ -85,7 +94,7 @@ try {
   await wait(ready);
   await wait(`document.querySelector('#onboarding-dialog')?.open`);
   check(await evaluate(`document.querySelector('#onboarding-step-label').textContent==='Paso 1 de 6' && document.activeElement.id==='onboarding-title'`), "primera apertura: bienvenida con foco en la pregunta");
-  check(await evaluate(`(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});const version=db.version;const value=await new Promise((resolve,reject)=>{const r=db.transaction('goals').objectStore('goals').get('migration-fixture');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});db.close();return version===3&&value.version===7&&value.title==='Objetivo anterior'&&value.archivedAt==='1999-12-31T13:00:00Z'})()`), "migración v1 a v3 conserva el objetivo archivado y sus metadatos");
+  check(await evaluate(`(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('enfoca');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});const version=db.version;const value=await new Promise((resolve,reject)=>{const r=db.transaction('goals').objectStore('goals').get('migration-fixture');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});db.close();return version===4&&value.version===7&&value.title==='Objetivo anterior'&&value.archivedAt==='1999-12-31T13:00:00Z'})()`), "migración v1 a v4 conserva el objetivo archivado y sus metadatos");
   await command("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await command("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   check(await evaluate(`document.activeElement.type==='checkbox'`), "teclado: Tab alcanza la primera opción nativa");
@@ -230,8 +239,10 @@ try {
     check(await evaluate(`(()=>{const r=document.querySelector('#goal-dialog').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.height<=innerHeight})()`), `formulario dentro de pantalla a ${width}px`);
     await evaluate(`document.querySelector('#cancel-goal').click()`);
   }
-  await checkVersionTwoMigration({ command, check, requestHandler: server.listeners("request")[0] });
+  await checkSchemaMigration({ command, check, requestHandler: server.listeners("request")[0] });
+  await checkSchemaMigration({ command, check, requestHandler: server.listeners("request")[0], fromVersion: 3 });
   await runAgendaBrowserTests({ command, evaluate, wait, check });
+  await runSummaryBrowserTests({ command, evaluate, wait, check });
   check(errors.length===0, "sin excepciones JavaScript no controladas en Chromium");
   const denied = await command("Page.addScriptToEvaluateOnNewDocument", { source: `window.deniedOriginalOpen=IDBFactory.prototype.open;IDBFactory.prototype.open=function(){throw new DOMException('denied','SecurityError')}` });
   await command("Page.reload");
@@ -246,6 +257,7 @@ try {
   await command("Page.reload");
   await wait(ready);
   check(await evaluate(`document.querySelectorAll('#goal-list li').length===1`), "recuperación del acceso conserva los datos existentes");
+  if (process.argv.includes('--pwa')) await runPWABrowserTests({ command, evaluate, wait, check, origin, networkResponses, setRelease(value) { pwaTestRelease = value; } });
   check(errors.length===0, "sin excepciones no controladas al finalizar todas las pruebas");
   await command("Browser.close", {}, null);
 } finally {

@@ -196,6 +196,7 @@ export function mountAgenda() {
       state.error = ""; state.message = "Actividad guardada en este dispositivo."; saved = true; id = activity.id;
       if (source === "form") editor.close();
       if (source === "delete") deletion.close();
+      window.dispatchEvent(new Event("enfoca:activities-changed"));
       try { channel?.postMessage("changed"); } catch { /* Escritura confirmada igualmente. */ }
     } catch (error) {
       const message = `${error.message} No se ha guardado la operación.`;
